@@ -88,11 +88,20 @@ public class EditActivity extends AppCompatActivity {
     }
 
     void submit (View view){
-        Employee employee = new Employee(String.valueOf(nameEntry.getText()),Integer.parseInt(ageEntry.getText().toString()),String.valueOf(postEntry.getText()),mGender,id);
+
+       final Employee employee = new Employee(String.valueOf(nameEntry.getText()),Integer.parseInt(ageEntry.getText().toString()),String.valueOf(postEntry.getText()),mGender,id);
+        AppExecutor.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mdb.employeeDAO().update(employee);
+            }
+        });
 
 
 
-        mdb.employeeDAO().update(employee);
+
+
+
         finish();
 
 
@@ -115,10 +124,15 @@ public class EditActivity extends AppCompatActivity {
 
         if(idm == R.id.delete) {
 
-            Employee employee = new Employee(String.valueOf(nameEntry.getText()),Integer.parseInt(ageEntry.getText().toString()),String.valueOf(postEntry.getText()),mGender,id);
+            final Employee employee = new Employee(String.valueOf(nameEntry.getText()),Integer.parseInt(ageEntry.getText().toString()),String.valueOf(postEntry.getText()),mGender,id);
+            AppExecutor.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    mdb.employeeDAO().delete(employee);
+                    finish();
+                }
+            });
 
-            mdb.employeeDAO().delete(employee);
-            finish();
 
         }
 
