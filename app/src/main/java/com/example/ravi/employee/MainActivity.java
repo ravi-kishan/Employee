@@ -73,8 +73,14 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         }
 
         if(id == R.id.deleteAll) {
-            mdb.employeeDAO().deleteAll(myDataset);
-            myDataset =(ArrayList<Employee>) mdb.employeeDAO().getAll();
+            AppExecutor.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    mdb.employeeDAO().deleteAll(myDataset);
+                }
+            });
+
+            myDataset = null;
             mAdapter = new MyAdapter(myDataset,this );
             mRecyclerView.setAdapter(mAdapter);
 
@@ -89,9 +95,23 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
     @Override
     protected void onResume() {
         super.onResume();
-       myDataset =(ArrayList<Employee>) mdb.employeeDAO().getAll();
-        mAdapter = new MyAdapter(myDataset,this);
-        mRecyclerView.setAdapter(mAdapter);
+        AppExecutor.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final ArrayList<Employee> listEmployee =(ArrayList<Employee>) mdb.employeeDAO().getAll();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter = new MyAdapter(listEmployee,MainActivity.this);
+                        mRecyclerView.setAdapter(mAdapter);
+                    }
+                });
+            }
+
+        });
+
+
+
     }
 
 

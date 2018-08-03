@@ -42,7 +42,7 @@ public class addActivity extends AppCompatActivity {
 
     }
 
-   
+
    void submit (View view){
         final Employee employee = new Employee(String.valueOf(nameEntry.getText()),Integer.parseInt(ageEntry.getText().toString()),String.valueOf(postEntry.getText()),mGender);
 
