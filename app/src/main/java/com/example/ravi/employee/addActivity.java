@@ -42,26 +42,19 @@ public class addActivity extends AppCompatActivity {
 
     }
 
-   /* void submit(View view){
-
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(EmployeeEntry.COLUMN_EMPLOYEE_NAME, String.valueOf(nameEntry.getText()));
-        values.put(EmployeeEntry.COLUMN_EMPLOYEE_POST,String.valueOf(postEntry.getText()));
-        values.put(EmployeeEntry.COLUMN_EMPLOYEE_GENDER,mGender);
-        values.put(EmployeeEntry.COLUMN_EMPLOYEE_AGE, Integer.parseInt(ageEntry.getText().toString()));
-
-        long newRowId = db.insert(EmployeeEntry.TABLE_NAME,null,values);
-    }
-*/
+   
    void submit (View view){
-       Employee employee = new Employee(String.valueOf(nameEntry.getText()),Integer.parseInt(ageEntry.getText().toString()),String.valueOf(postEntry.getText()),mGender);
+        final Employee employee = new Employee(String.valueOf(nameEntry.getText()),Integer.parseInt(ageEntry.getText().toString()),String.valueOf(postEntry.getText()),mGender);
+
+        AppExecutor.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                mdb.employeeDAO().insert(employee);
+                finish();
+            }
+        });
 
 
-
-       mdb.employeeDAO().insert(employee);
-       finish();
 
 
 
