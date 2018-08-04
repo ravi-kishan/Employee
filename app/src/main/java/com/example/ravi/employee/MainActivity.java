@@ -1,7 +1,5 @@
 package com.example.ravi.employee;
 
-import android.app.Activity;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -13,7 +11,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,13 +46,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
 
 
 
-
-
-      //  displayDatabaseInfo();
-
-
         mdb = MyDatabase.getAppDatabase(getApplicationContext());
-        retrieveTasks();
+        setupViewModel();
 
     }
 
@@ -76,7 +68,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         if(id == R.id.add) {
             Intent addintent = new Intent(MainActivity.this, addActivity.class);
             startActivity(addintent);
-            //retrieveTasks();
+
 
 
         }
@@ -111,11 +103,11 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
     @Override
     protected void onResume() {
         super.onResume();
-       //retrieveTasks();
+       //setupViewModel();
         mAdapter = new MyAdapter(myDataset,MainActivity.this);
         mRecyclerView.setAdapter(mAdapter);
 
-        //Toast.makeText(this,Integer.toString(mAdapter.getItemCount()),Toast.LENGTH_SHORT).show();
+      
 
 
     }
@@ -137,7 +129,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
 
     }
 
-    public void retrieveTasks(){
+    public void setupViewModel(){
 
                ViewModel viewModel = ViewModelProviders.of(this).get(ViewModel.class);
                viewModel.getEmployees().observe(this, new Observer<List<Employee>>() {
