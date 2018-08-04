@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-       
+
 
 
 
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            myDataset = null;
+                            myDataset = new ArrayList<>();
                             mAdapter = new MyAdapter(myDataset,listener );
                             mRecyclerView.setAdapter(mAdapter);
                         }
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         mAdapter = new MyAdapter(myDataset,MainActivity.this);
         mRecyclerView.setAdapter(mAdapter);
 
-        Toast.makeText(this,Integer.toString(mAdapter.getItemCount()),Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this,Integer.toString(mAdapter.getItemCount()),Toast.LENGTH_SHORT).show();
 
 
     }
