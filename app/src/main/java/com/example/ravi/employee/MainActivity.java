@@ -1,8 +1,11 @@
 package com.example.ravi.employee;
 
 import android.app.Activity;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.content.Intent;
 
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +15,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements MyAdapter.ListItemClickListener {
 
@@ -50,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
 
 
         mdb = MyDatabase.getAppDatabase(getApplicationContext());
+        retrieveTasks();
 
     }
 
@@ -70,21 +75,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         if(id == R.id.add) {
             Intent addintent = new Intent(MainActivity.this, addActivity.class);
             startActivity(addintent);
-            AppExecutor.getInstance().diskIO().execute(new Runnable() {
-                @Override
-                public void run() {
-                    final ArrayList<Employee> listEmployee =(ArrayList<Employee>) mdb.employeeDAO().getAll();
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                           myDataset = listEmployee;
-                            mAdapter = new MyAdapter(myDataset,listener );
-                            mRecyclerView.setAdapter(mAdapter);
-                        }
-                    });
-                }
-
-            });
+            //retrieveTasks();
 
 
         }
@@ -119,22 +110,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
     @Override
     protected void onResume() {
         super.onResume();
-        AppExecutor.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
-                final ArrayList<Employee> listEmployee =(ArrayList<Employee>) mdb.employeeDAO().getAll();
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                       myDataset = listEmployee;
-                        mAdapter = new MyAdapter(myDataset,listener );
-                        mRecyclerView.setAdapter(mAdapter);
-
-                    }
-                });
-            }
-
-        });
+       //retrieveTasks();
         mAdapter = new MyAdapter(myDataset,MainActivity.this);
         mRecyclerView.setAdapter(mAdapter);
 
@@ -159,4 +135,24 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
 
 
     }
+
+    public void retrieveTasks(){
+        AppExecutor.getInstance().diskIO().execute(new Runnable() {
+            @Override
+            public void run() {
+                final LiveData<List<Employee>> listEmployee =mdb.employeeDAO().getAll();
+               listEmployee.observe(MainActivity.this, new Observer<List<Employee>>() {
+                   @Override
+                   public void onChanged(@Nullable List<Employee> employees) {
+                       myDataset = (ArrayList<Employee>)employees;
+                       mAdapter = new MyAdapter(myDataset,listener );
+                       mRecyclerView.setAdapter(mAdapter);
+                   }
+               });
+
+            }
+
+        });
+    }
+
 }
