@@ -3,6 +3,7 @@ package com.example.ravi.employee;
 import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 
 import android.support.annotation.Nullable;
@@ -138,8 +139,8 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
 
     public void retrieveTasks(){
 
-                final LiveData<List<Employee>> listEmployee =mdb.employeeDAO().getAll();
-               listEmployee.observe(MainActivity.this, new Observer<List<Employee>>() {
+               ViewModel viewModel = ViewModelProviders.of(this).get(ViewModel.class);
+               viewModel.getEmployees().observe(this, new Observer<List<Employee>>() {
                    @Override
                    public void onChanged(@Nullable List<Employee> employees) {
                        myDataset = (ArrayList<Employee>)employees;

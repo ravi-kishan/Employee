@@ -17,6 +17,8 @@ public class ViewModel extends AndroidViewModel{
 
     public ViewModel(@NonNull Application application) {
         super(application);
+        MyDatabase database = MyDatabase.getAppDatabase(this.getApplication());
+        employees = database.employeeDAO().getAll();
     }
 
     public LiveData<List<Employee>> getEmployees(){
