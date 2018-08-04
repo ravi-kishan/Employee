@@ -137,9 +137,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
     }
 
     public void retrieveTasks(){
-        AppExecutor.getInstance().diskIO().execute(new Runnable() {
-            @Override
-            public void run() {
+
                 final LiveData<List<Employee>> listEmployee =mdb.employeeDAO().getAll();
                listEmployee.observe(MainActivity.this, new Observer<List<Employee>>() {
                    @Override
@@ -152,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
 
             }
 
-        });
-    }
+
 
 }
