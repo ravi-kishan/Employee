@@ -1,5 +1,6 @@
 package com.example.ravi.employee;
 
+import android.app.Activity;
 import android.content.Intent;
 
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -20,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
     private ArrayList<Employee> myDataset;
 
     private MyDatabase mdb;
+    private MyAdapter.ListItemClickListener listener;
 
 
     @Override
@@ -27,7 +30,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         myDataset = new ArrayList<>();
-
+        listener=this;
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
@@ -39,9 +42,7 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         mLayoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(mLayoutManager);
 
-        // specify an adapter (see also next example)
-        mAdapter = new MyAdapter(myDataset,this);
-        mRecyclerView.setAdapter(mAdapter);
+       
 
 
 
@@ -69,6 +70,22 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
         if(id == R.id.add) {
             Intent addintent = new Intent(MainActivity.this, addActivity.class);
             startActivity(addintent);
+            AppExecutor.getInstance().diskIO().execute(new Runnable() {
+                @Override
+                public void run() {
+                    final ArrayList<Employee> listEmployee =(ArrayList<Employee>) mdb.employeeDAO().getAll();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                           myDataset = listEmployee;
+                            mAdapter = new MyAdapter(myDataset,listener );
+                            mRecyclerView.setAdapter(mAdapter);
+                        }
+                    });
+                }
+
+            });
+
 
         }
 
@@ -77,12 +94,19 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
                 @Override
                 public void run() {
                     mdb.employeeDAO().deleteAll(myDataset);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            myDataset = null;
+                            mAdapter = new MyAdapter(myDataset,listener );
+                            mRecyclerView.setAdapter(mAdapter);
+                        }
+                    });
                 }
+
             });
 
-            myDataset = null;
-            mAdapter = new MyAdapter(myDataset,this );
-            mRecyclerView.setAdapter(mAdapter);
+
 
         }
 
@@ -102,14 +126,19 @@ public class MainActivity extends AppCompatActivity implements MyAdapter.ListIte
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mAdapter = new MyAdapter(listEmployee,MainActivity.this);
+                       myDataset = listEmployee;
+                        mAdapter = new MyAdapter(myDataset,listener );
                         mRecyclerView.setAdapter(mAdapter);
+
                     }
                 });
             }
 
         });
+        mAdapter = new MyAdapter(myDataset,MainActivity.this);
+        mRecyclerView.setAdapter(mAdapter);
 
+        Toast.makeText(this,Integer.toString(mAdapter.getItemCount()),Toast.LENGTH_SHORT).show();
 
 
     }
